@@ -1,0 +1,35 @@
+From 9deb3c88a455290c31aa5d93953a45a09809eb5c Mon Sep 17 00:00:00 2001
+From: Kirill Kapranov <kkapra@codeaurora.org>
+Date: Thu, 27 Jul 2017 18:25:31 +0300
+Subject: net: wireless: wcn36xx: Eliminate dangerous SKB freeing
+
+The seemingly inappropriate SKB freeing leads a spontaneous reboots
+during an attempt to send more packets than bandwidth admits.
+The elimination of this code get them stopped.
+
+Signed-off-by: Kirill Kapranov <kkapra@codeaurora.org>
+
+Change-Id: If1b7923910eb9aa343714d273f458b393f7a5193
+Signed-off-by: Kirill Kapranov <kkapra@codeaurora.org>
+---
+ drivers/net/wireless/ath/wcn36xx/main.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+index b3ef12c..2bcc325 100644
+--- a/drivers/net/wireless/ath/wcn36xx/main.c
++++ b/drivers/net/wireless/ath/wcn36xx/main.c
+@@ -456,9 +456,7 @@ static void wcn36xx_tx(struct ieee80211_hw *hw,
+ 
+ 	if (control->sta)
+ 		sta_priv = wcn36xx_sta_to_priv(control->sta);
+-
+-	if (wcn36xx_start_tx(wcn, sta_priv, skb))
+-		ieee80211_free_txskb(wcn->hw, skb);
++	wcn36xx_start_tx(wcn, sta_priv, skb);
+ }
+ 
+ static int wcn36xx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+-- 
+cgit v1.1
+
